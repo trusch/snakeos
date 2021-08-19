@@ -10,7 +10,7 @@ members = [
 ]
 
 [dependencies]
-bootloader = { version = "0.10.6" }
+bootloader = { version = "0.10.7" }
 lazy_static = { version = "1.0", features = ["spin_no_std"] }
 spin = "0.5.2"
 x86_64 = { version = "0.14.2" }
@@ -18,3 +18,13 @@ volatile = "0.2.6"
 uart_16550 = "*"
 font8x8 = { version = "0.2.5", default-features = false, features = ["unicode"] }
 pic8259 = "0.10.1"
+pc-keyboard = "0.5.0"
+linked_list_allocator = "0.9.0"
+crossbeam-queue = { version = "0.2.1", default-features = false, features = ["alloc"] }
+conquer-once = { version = "0.2.0", default-features = false }
+futures-util = { version = "0.3.4", default-features = false, features = ["alloc"] }
+rand = { version = "0.8.4", default-features = false, features = ["small_rng", "alloc"] }
+
+[package.metadata.bootloader]
+map-physical-memory = true
+physical-memory-offset = 0x0000_4000_0000_0000
