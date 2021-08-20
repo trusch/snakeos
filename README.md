@@ -1,8 +1,8 @@
 # SnakeOS
 
-This is the game snake, bootable on a x86_64 CPU written completely in rust.
+This is the game snake, bootable on a x86_64 CPU, written completely in rust. It's foundation is following the very interesting [Writing an OS in Rust](https://os.phil-opp.com/) blog which I would recommend everybody who is interested in this kind of stuff. 
 
-[snake](./screenshots/screenshot.png)
+![screenshot](./screenshots/screenshot.png)
 
 ## Features
 
@@ -15,9 +15,9 @@ This is the game snake, bootable on a x86_64 CPU written completely in rust.
 * Async/Await support
     * We can update the world and read the keyboard at the same time!
 * Only 212kB kernel size
-    * You can put it on the smalles USB stick you have around!
+    * You can even put this on a 8-inch floppy disk!
 
-## Build Commands
+## Build it
 
 Use the Makefile to build the game. 
 The only dependencies are `podman` and `buildah` which are used to setup the build enviroment.
@@ -34,5 +34,5 @@ To run the game, you can use the following command:
 make run
 ```
 
-which will actually run `qemu-system-x86_64 --enable-kvm -drive format=raw,file=snakeos.img` for you
+which will actually run `qemu-system-x86_64 --enable-kvm -drive format=raw,file=snakeos.img` for you. From here you can use either `w`, `a`, `s` and `d` or the arrow keys to control the snake.
 
