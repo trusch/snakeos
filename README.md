@@ -1,19 +1,19 @@
 # SnakeOS
 
-This is the game snake, bootable on a x86_64 CPU, written completely in rust. It's foundation is following the very interesting [Writing an OS in Rust](https://os.phil-opp.com/) blog which I would recommend everybody who is interested in this kind of stuff. 
+This is the game snake, bootable on a x86_64 CPU, written completely in rust. It's foundation is following the very interesting [Writing an OS in Rust](https://os.phil-opp.com/) blog which I would recommend everybody who is interested in this kind of stuff.
 
 ![screenshot](./screenshots/screenshot.png)
 
 ## Features
 
-* Play snake on a x86_64 CPU
+* Play snake on any x86_64 CPU
     * Let's have fun!
 * Dynamic memory management
     * The snake can grow!
 * Interrupt handling
     * We can read the keyboard!
 * Async/Await support
-    * We can update the world and read the keyboard at the same time!
+    * We can update the world and read user input at the same time!
 * Only 212kB kernel size
     * You can even put this on a 8-inch floppy disk!
 
