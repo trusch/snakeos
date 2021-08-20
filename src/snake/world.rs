@@ -131,12 +131,7 @@ impl World {
     }
 
     fn place_random_food(&mut self) {
-        let mut point = Point {
-            x: self.rand(self.width),
-            y: self.rand(self.height),
-        };
-        point.x = point.x - point.x % BLOCK_SIZE;
-        point.y = point.y - point.y % BLOCK_SIZE;
+        let mut point = Point {x: 0, y: 0};
         while self.snake_body.contains(&point)
             || self.snake_head == point
             || point.x >= self.width - 2 * BLOCK_SIZE
@@ -148,6 +143,8 @@ impl World {
                 x: self.rand(self.width),
                 y: self.rand(self.height),
             };
+            point.x = point.x - point.x % BLOCK_SIZE;
+            point.y = point.y - point.y % BLOCK_SIZE;
         }
         self.food = Some(point);
     }

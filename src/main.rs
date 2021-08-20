@@ -12,6 +12,7 @@ use futures_util::stream::StreamExt;
 use lazy_static::lazy_static;
 use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
 use task::keyboard::ScancodeStream;
+use task::tick::TickStream;
 
 mod allocator;
 mod display;
@@ -72,6 +73,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
         x86_64::instructions::interrupts::enable();
 
         executor.spawn(Task::new(handle_keypresses()));
+        executor.spawn(Task::new(handle_ticks()));
         executor.run();
     }
 
@@ -95,7 +97,16 @@ fn alloc_error_handler(layout: alloc::alloc::Layout) -> ! {
     panic!("allocation error: {:?}", layout)
 }
 
-pub async fn handle_keypresses() {
+async fn handle_ticks() {
+    let mut stream = TickStream::new();
+    while let Some(_) = stream.next().await {
+        let mut world = WORLD.lock();
+        world.step();
+        world.draw(&mut DISPLAY.lock());
+    }
+}
+
+async fn handle_keypresses() {
     let mut scancodes = ScancodeStream::new();
     let mut keyboard = Keyboard::new(layouts::Us104Key, ScancodeSet1, HandleControl::Ignore);
 
@@ -106,10 +117,26 @@ pub async fn handle_keypresses() {
                     DecodedKey::Unicode(character) => {
                         serial_print!("{}", character);
                         match character {
-                            'a' => if WORLD.lock().direction != Direction::Right {WORLD.lock().direction = Direction::Left},
-                            'd' => if WORLD.lock().direction != Direction::Left {WORLD.lock().direction = Direction::Right},
-                            'w' => if WORLD.lock().direction != Direction::Down {WORLD.lock().direction = Direction::Up},
-                            's' => if WORLD.lock().direction != Direction::Up {WORLD.lock().direction = Direction::Down},
+                            'a' => { let mut w = WORLD.lock(); 
+                                if w.direction != Direction::Right {
+                                    w.direction = Direction::Left;
+                                }
+                            },
+                            'd' => { let mut w = WORLD.lock(); 
+                                if w.direction != Direction::Left {
+                                    w.direction = Direction::Right;
+                                }
+                            },
+                            'w' => { let mut w = WORLD.lock(); 
+                                if w.direction != Direction::Down {
+                                    w.direction = Direction::Up;
+                                }
+                            },
+                            's' => { let mut w = WORLD.lock(); 
+                                if w.direction != Direction::Up {
+                                    w.direction = Direction::Down;
+                                }
+                            },
                             'r' => {
                                 use x86_64::instructions::interrupts;
                                 interrupts::without_interrupts(|| {
@@ -156,8 +183,8 @@ fn welcome() {
     write!(&mut display, "{}", msg);
     let footer = "by trusch";
     display.set_xy(
-        w - footer.len()*8 - 10,
-        h - 18,
+        w - footer.len()*8 - 3*display::BLOCK_SIZE,
+        h - 4*display::BLOCK_SIZE,
     );
     write!(&mut display, "{}", footer);
 

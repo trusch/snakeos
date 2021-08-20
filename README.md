@@ -1,17 +1,38 @@
-# Basic Example
+# SnakeOS
 
-This a minimal example how to create a bootable disk image with the `bootloader` crate.
+This is the game snake, bootable on a x86_64 CPU written completely in rust.
 
-## Structure
+[snake](./screenshots/screenshot.png)
 
-The kernel code is in `src/main.rs`. It requires some special build instructions to recompile the `core` library for the custom target defined in `x86_64-custom.json`. It depends on the `bootloader` crate for booting..
+## Features
 
-The `simple_boot` sub-crate is responsible for combining the kernel with the bootloader to create bootable disk images. It is configured as a [custom _runner_](https://doc.rust-lang.org/cargo/reference/config.html#targettriplerunner), which means that cargo will automatically invoke it on `cargo run`. The compiled kernel will hereby be passed as an argument.
+* Play snake on a x86_64 CPU
+    * Let's have fun!
+* Dynamic memory management
+    * The snake can grow!
+* Interrupt handling
+    * We can read the keyboard!
+* Async/Await support
+    * We can update the world and read the keyboard at the same time!
+* Only 212kB kernel size
+    * You can put it on the smalles USB stick you have around!
 
 ## Build Commands
 
-The `.cargo/config.toml` file defines command aliases for the common commands:
+Use the Makefile to build the game. 
+The only dependencies are `podman` and `buildah` which are used to setup the build enviroment.
 
-- To build the kernel, run **`cargo kbuild`**.
-- To build the kernel and turn it into a bootable disk image, run **`cargo kimage`** (short for "kernel image"). This will invoke our `boot` sub-crate with an additional `--no-run` argument so that it just creates the disk image and exits.
-- To additionally run the kernel in QEMU after creating the disk image, run **`cargo krun`**.
+```
+make snakeos.img
+```
+
+This will first setup a build container with the necessary dependencies and then build the game.
+
+To run the game, you can use the following command:
+
+```
+make run
+```
+
+which will actually run `qemu-system-x86_64 --enable-kvm -drive format=raw,file=snakeos.img` for you
+
