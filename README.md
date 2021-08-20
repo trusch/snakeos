@@ -28,7 +28,23 @@ make snakeos.img
 
 This will first setup a build container with the necessary dependencies and then build the game.
 
-To run the game, you can use the following command:
+Alternativly you can use the rust compiler directly with some tricks applied:
+
+```
+rustup override set nightly
+rustup toolchain install nightly
+rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
+rustup component add llvm-tools-preview
+cargo run \
+    --release \
+    --target x86_64-custom.json \
+    -Zbuild-std=core,alloc \
+    -Zbuild-std-features=compiler-builtins-mem -- \
+        --no-run
+ln -sf target/x86_64-custom/release/boot-bios-snakeos.img snakeos.img
+```
+
+To now run the game, you can use the following command:
 
 ```
 make run
