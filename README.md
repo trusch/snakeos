@@ -1,6 +1,6 @@
 # SnakeOS
 
-This is the game snake, bootable on a x86_64 CPU, written completely in rust. It's foundation is following the very interesting [Writing an OS in Rust](https://os.phil-opp.com/) blog which I would recommend everybody who is interested in this kind of stuff.
+This is the game snake, bootable on a x86_64 CPU, written completely in rust. Its foundation is following the very interesting [Writing an OS in Rust](https://os.phil-opp.com/) blog which I would recommend everybody who is interested in this kind of stuff.
 
 ![screenshot](./screenshots/screenshot.png)
 
@@ -20,7 +20,7 @@ This is the game snake, bootable on a x86_64 CPU, written completely in rust. It
 ## Build it
 
 Use the Makefile to build the game. 
-The only dependencies are `podman` and `buildah` which are used to setup the build enviroment.
+The only dependencies are `podman` and `buildah` which are used to setup the build environment.
 
 ```
 make snakeos.img
@@ -28,7 +28,7 @@ make snakeos.img
 
 This will first setup a build container with the necessary dependencies and then build the game.
 
-Alternativly you can use the rust compiler directly with some tricks applied:
+Alternatively, you can use the rust compiler directly with some tricks applied:
 
 ```
 rustup override set nightly
