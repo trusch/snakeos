@@ -41,6 +41,7 @@ cargo run \
     -Zbuild-std=core,alloc \
     -Zbuild-std-features=compiler-builtins-mem -- \
         --no-run
+touch .build-image
 ln -sf target/x86_64-custom/release/boot-bios-snakeos.img snakeos.img
 ```
 
