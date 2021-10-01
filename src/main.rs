@@ -17,6 +17,7 @@ use task::tick::TickStream;
 
 mod allocator;
 mod display;
+mod game2048;
 mod gdt;
 mod interrupts;
 mod memory;
@@ -66,8 +67,10 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
         };
         serial_println!("width: {}, height: {}", width, height);
         let game_snake = Box::new(snake::world::World::new(width, height));
+        let game_2048 = Box::new(game2048::World::new(width, height));
         let mut world = Arc::new(spin::Mutex::new(world::World::new(width, height)));
         world.lock().add_game(game_snake, "snake");
+        world.lock().add_game(game_2048, "2048");
         serial_println!("enable interrupts");
         x86_64::instructions::interrupts::enable();
 

@@ -52,3 +52,10 @@ make run
 
 which will actually run `qemu-system-x86_64 --enable-kvm -drive format=raw,file=snakeos.img` for you. From here you can use either `w`, `a`, `s` and `d` or the arrow keys to control the snake.
 
+
+## Screenshots
+
+![welcome](./screenshots/welcome.png)
+
+![2048](./screenshots/2048.png)
+
