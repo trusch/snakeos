@@ -91,7 +91,12 @@ impl Board {
             .nth(random)
             .unwrap();
         assert!(to_fill.val.is_none());
-        to_fill.val = Some(2);
+
+        // In the original game there is a 10% chance that this is a 4
+        // reference: https://github.com/gabrielecirulli/2048/blob/fc1ef4fe5a5fcccea7590f3e4c187c75980b353f/js/game_manager.js#L71
+        let fill_val = if self.rng.next_u64() % 10 == 0 { 4 } else { 2 };
+
+        to_fill.val = Some(fill_val);
         to_fill.changed = true;
         true
     }
