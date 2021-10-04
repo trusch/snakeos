@@ -2,6 +2,7 @@
 runner = "cargo run --package boot --"
 
 [alias]
+c  = "check --target x86_64-custom.json -Zbuild-std=core,alloc -Zbuild-std-features=compiler-builtins-mem"
 kbuild = "build --target x86_64-custom.json -Zbuild-std=core,alloc -Zbuild-std-features=compiler-builtins-mem"
 kimage = "run --target x86_64-custom.json -Zbuild-std=core,alloc -Zbuild-std-features=compiler-builtins-mem -- --no-run"
 krun = "run --target x86_64-custom.json -Zbuild-std=core,alloc -Zbuild-std-features=compiler-builtins-mem"

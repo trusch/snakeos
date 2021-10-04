@@ -1,21 +1,11 @@
 use crate::display::{Color, Display, BLOCK_SIZE};
 use crate::serial_println;
+use crate::world::{Game, GameState, Direction};
 use alloc::collections::VecDeque;
 use rand::prelude::*;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Direction {
-    Up,
-    Right,
-    Down,
-    Left,
-}
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Point {
-    x: usize,
-    y: usize,
-}
+use crate::world::ScreenPos as Point;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct World {
@@ -32,7 +22,6 @@ pub struct World {
     pub snake_tail: Option<Point>,
     rng: rand::rngs::SmallRng,
     counter: u64,
-    game_over_drawn: bool,
 }
 
 impl World {
@@ -42,8 +31,8 @@ impl World {
             y: height / 2,
         };
         World {
-            width: width,
-            height: height,
+            width,
+            height,
             food: None,
             score: 0,
             game_over: false,
@@ -55,11 +44,38 @@ impl World {
             snake_tail: None,
             rng: rand::rngs::SmallRng::from_seed([0; 32]),
             counter: 0,
-            game_over_drawn: false,
         }
     }
 
-    pub fn reset(&mut self, width: usize, height: usize) {
+    fn place_random_food(&mut self) {
+        let mut point = Point { x: 0, y: 0 };
+        while self.snake_body.contains(&point)
+            || self.snake_head == point
+            || point.x >= self.width - 2 * BLOCK_SIZE
+            || point.y >= self.height - 2 * BLOCK_SIZE
+            || point.x <= 2 * BLOCK_SIZE
+            || point.y <= 2 * BLOCK_SIZE
+        {
+            point = Point {
+                x: self.rand(self.width),
+                y: self.rand(self.height),
+            };
+            point.x = point.x - point.x % BLOCK_SIZE;
+            point.y = point.y - point.y % BLOCK_SIZE;
+        }
+        self.food = Some(point);
+    }
+
+    // rand implements a simple pseudo random number generator
+    // that returns a random number between 0 and max
+    fn rand(&mut self, max: usize) -> usize {
+        let result = self.rng.next_u64() as usize % max;
+        result
+    }
+}
+
+impl Game for World {
+    fn reset(&mut self, width: usize, height: usize) {
         self.width = width;
         self.height = height;
         self.food = None;
@@ -75,17 +91,16 @@ impl World {
         self.snake_body = VecDeque::new();
         self.snake_tail = None;
         self.counter = 0;
-        self.game_over_drawn = false;
     }
 
     // step moves the snake one step forward
-    pub fn step(&mut self) {
+    fn step(&mut self) -> GameState {
         self.counter += 1;
         if self.counter % self.speed as u64 != 0 {
-            return;
+            return GameState::Live;
         }
         if self.game_over {
-            return;
+            return GameState::GameOver;
         }
         // update snake head
         let mut new_head = self.snake_head;
@@ -128,56 +143,53 @@ impl World {
                 self.game_over = true;
             }
         }
-    }
 
-    fn place_random_food(&mut self) {
-        let mut point = Point {x: 0, y: 0};
-        while self.snake_body.contains(&point)
-            || self.snake_head == point
-            || point.x >= self.width - 2 * BLOCK_SIZE
-            || point.y >= self.height - 2 * BLOCK_SIZE
-            || point.x <= 2 * BLOCK_SIZE
-            || point.y <= 2 * BLOCK_SIZE
-        {
-            point = Point {
-                x: self.rand(self.width),
-                y: self.rand(self.height),
-            };
-            point.x = point.x - point.x % BLOCK_SIZE;
-            point.y = point.y - point.y % BLOCK_SIZE;
+        if self.game_over {
+            GameState::GameOver
+        } else {
+            GameState::Live
         }
-        self.food = Some(point);
     }
 
-    // rand implements a simple pseudo random number generator
-    // that returns a random number between 0 and max
-    fn rand(&mut self, max: usize) -> usize {
-        let result = self.rng.next_u64() as usize % max;
-        result
+    fn on_keypress(&mut self, key: pc_keyboard::DecodedKey) {
+        let w = self;
+        match key {
+            pc_keyboard::DecodedKey::Unicode(character) => match character {
+                'a' => {
+                    if w.direction != Direction::Right {
+                        w.direction = Direction::Left;
+                    }
+                }
+                'd' => {
+                    if w.direction != Direction::Left {
+                        w.direction = Direction::Right;
+                    }
+                }
+                'w' => {
+                    if w.direction != Direction::Down {
+                        w.direction = Direction::Up;
+                    }
+                }
+                's' => {
+                    if w.direction != Direction::Up {
+                        w.direction = Direction::Down;
+                    }
+                }
+                _ => (),
+            },
+            pc_keyboard::DecodedKey::RawKey(key) => match key {
+                pc_keyboard::KeyCode::ArrowLeft => w.direction = Direction::Left,
+                pc_keyboard::KeyCode::ArrowRight => w.direction = Direction::Right,
+                pc_keyboard::KeyCode::ArrowUp => w.direction = Direction::Up,
+                pc_keyboard::KeyCode::ArrowDown => w.direction = Direction::Down,
+                _ => {}
+            },
+        }
     }
 
-    pub fn draw(&mut self, display: &mut Display) {
+    fn draw(&mut self, display: &mut Display) {
         // if game is over, print "GAME OVER"
         if self.game_over {
-            if self.game_over_drawn {
-                return;
-            }
-            display.clear();
-            use core::fmt::Write;
-            let msg = "GAME OVER";
-            display.set_xy(
-                display.info.unwrap().horizontal_resolution / 2 - msg.len() * 8 / 2,
-                display.info.unwrap().vertical_resolution / 2,
-            );
-            display.write_str(msg);
-            let msg = "(press 'r' to restart)";
-            display.set_xy(
-                display.info.unwrap().horizontal_resolution / 2 - msg.len() * 8 / 2,
-                display.info.unwrap().vertical_resolution / 2 + 10,
-            );
-            display.write_str(msg);
-            serial_println!("GAME OVER");
-            self.game_over_drawn = true;
             return;
         }
 
@@ -194,14 +206,6 @@ impl World {
         // draw snake
         for part in self.snake_body.iter() {
             display.write_block(part.x, part.y, Color::LightGreen);
-        }
-    }
-
-    pub fn draw_box(&self, display: &mut Display, x: usize, y: usize, color: Color) {
-        for i in 0..4 {
-            for j in 0..4 {
-                display.write_pixel(x + i, y + j, color);
-            }
         }
     }
 }
