@@ -190,7 +190,7 @@ impl Game for World {
                 let mut result = CharsBuf::<128>::new();
                 let score = self.board.max_val();
                 if score >= 2048 {
-                    write!(result, "Congragulation! Press 'r' to restart.").unwrap();
+                    write!(result, "Congratulation! Press 'r' to restart.").unwrap();
                 } else {
                     write!(result, "Game over! Press 'r' to restart.").unwrap();
                 }
