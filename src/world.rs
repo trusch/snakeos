@@ -187,7 +187,7 @@ impl World {
         write!(display, "{}", msg);
         y_pos += 20;
 
-        let footer = "by trusch";
+        let footer = "by trusch & MoZhonghua";
         display.set_xy(
             w - footer.len() * 8 - 3 * crate::display::BLOCK_SIZE,
             h - 4 * crate::display::BLOCK_SIZE,

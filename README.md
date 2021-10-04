@@ -2,11 +2,13 @@
 
 This is the game snake, bootable on a x86_64 CPU, written completely in rust. Its foundation is following the very interesting [Writing an OS in Rust](https://os.phil-opp.com/) blog which I would recommend everybody who is interested in this kind of stuff.
 
+But it's not just snake. Thanks to @MoZhonghua its now possible to add different games to the OS and to play them. So apart from snake you can also enjoy a round of 2048.
+
 ![screenshot](./screenshots/screenshot.png)
 
 ## Features
 
-* Play snake on any x86_64 CPU
+* Play snake or 2048 on any x86_64 CPU
     * Let's have fun!
 * Dynamic memory management
     * The snake can grow!
@@ -14,8 +16,10 @@ This is the game snake, bootable on a x86_64 CPU, written completely in rust. It
     * We can read the keyboard!
 * Async/Await support
     * We can update the world and read user input at the same time!
-* Only 212kB kernel size
+* Only 226kB kernel size
     * You can even put this on a 8-inch floppy disk!
+* All the infrastructure you need to implement and play a game
+    * You can implement your own game!
 
 ## Build it
 
