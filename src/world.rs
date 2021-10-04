@@ -69,7 +69,14 @@ impl World {
             State::Welcome((_, selected_game)) => {
                 match key {
                     DecodedKey::Unicode('q') => {
-                        // TODO: how to quit in no_std?
+                        // TODO: shutdown properly
+                        //
+                        // Quote from https://os.phil-opp.com/testing/
+                        //
+                        // The clean solution to this would be to implement a proper way to
+                        // shutdown our OS. Unfortunately this is relatively complex, because it
+                        // requires implementing support for either the APM or ACPI power
+                        // management standard
                     }
                     DecodedKey::Unicode('\n') | DecodedKey::RawKey(KeyCode::Enter) => {
                         display.clear();
