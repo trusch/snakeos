@@ -50,11 +50,13 @@ impl Board {
             }
         }
 
+        let seed = unsafe { core::arch::x86_64::_rdtsc() };
+
         Self {
             rows,
             cols,
             tiles,
-            rng: rand::rngs::SmallRng::from_seed([0; 32]),
+            rng: rand::rngs::SmallRng::seed_from_u64(seed),
         }
     }
 
